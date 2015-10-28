@@ -20,22 +20,27 @@ function simpleRedisFactory(redisModule, opts){
 
     opts = opts || {};
 
-    if (!opts.url) {
-        opts.port = opts.port || defaultPort;
-        opts.host = opts.host || defaultHost;
-    } else {
-        url = urlParser(opts.url);
-        opts.port = url.port || defaultPort;
-        opts.host = url.hostname || defaultHost;
-
-        if (url.auth) {
-          opts.password = url.auth.split(':')[1];
-        }
+    if (opts.socket) {
+        client = redisModule.createClient(opts.socket, opts.opts);
     }
+    else {
+        if (!opts.url) {
+            opts.port = opts.port || defaultPort;
+            opts.host = opts.host || defaultHost;
+        } else {
+            url = urlParser(opts.url);
+            opts.port = url.port || defaultPort;
+            opts.host = url.hostname || defaultHost;
 
-    opts.opts = opts.opts || null;
+            if (url.auth) {
+              opts.password = url.auth.split(':')[1];
+            }
+        }
 
-    client = redisModule.createClient(opts.port, opts.host, opts.opts);
+        opts.opts = opts.opts || null;
+
+        client = redisModule.createClient(opts.port, opts.host, opts.opts);
+    }
 
 
     if (opts.password){
